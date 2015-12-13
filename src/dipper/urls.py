@@ -3,6 +3,6 @@ from handlers.main import *
 
 url_patterns = [
     (r'/api/request/', ProcessRequestHandler),
-#     (r"/api/serverStatus/", LoginHandler),
+    (r"/api/serverStatus/", ServerStatusHandler),
 #     (r"/api/kill/", StoreInfo)
 ]
