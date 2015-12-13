@@ -19,11 +19,13 @@ define('TEMPLATE_ROOT', default=TEMPLATE_ROOT, type=str,
 if options.config:
     options.parse_config_file(options.config)
 
+settings = dict()
 settings['static_path'] = MEDIA_ROOT
 settings['static_url_prefix'] = '/app_static/'
 settings['cookie_secret'] = "your-cookie-secret"
 settings['xsrf_cookies'] = False
 settings['template_loader'] = Loader(TEMPLATE_ROOT)
+settings['debug'] = True
 
 if options.config:
     options.parse_config_file(options.config)
