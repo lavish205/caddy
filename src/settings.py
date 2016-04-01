@@ -16,8 +16,18 @@ options.parse_command_line()
 define('TEMPLATE_ROOT', default=TEMPLATE_ROOT, type=str,
        help='template root path')
 
+
 # APIs key
-define('AMADEUS_API_KEY', default="9z7NrYTcRZjUXrACrOJTDOka2S5wABsL", type=str, help='amadeus api key')
+AMADEUS_API_KEY = os.environ.get('AMADEUS_API_KEY')
+UBER_CLIENT_ID = os.environ.get('UBER_CLIENT_ID')
+UBER_SERVICE_TOKEN = os.environ.get('UBER_SERVICE_TOKEN')
+UBER_CLIENT_SECRET = os.environ.get('UBER_CLIENT_SECRET')
+
+define('AMADEUS_API_KEY', default=AMADEUS_API_KEY, type=str, help='amadeus api key')
+define('UBER_CLIENT_ID', default=UBER_CLIENT_ID, type=str, help='uber client id')
+define('UBER_SERVICE_TOKEN', default=UBER_SERVICE_TOKEN, type=str, help='uber service token')
+define('UBER_CLIENT_SECRET', default=UBER_CLIENT_SECRET, type=str, help='uber client secret')
+
 
 settings = dict()
 settings['static_path'] = MEDIA_ROOT
