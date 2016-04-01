@@ -155,6 +155,38 @@ class UberRideStatusHandler(RequestHandler):
             writeObjToResponse(self, object=response, status=status)
         self.finish()
 
+    @coroutine
+    def delete(self, *args, **kwargs):
+        response = {}
+        status = 200
+        try:
+            request_id = self.get_argument("request_id")
+            assert request_id, {
+                "message": "`request_id` key is missing",
+                "status": 400
+            }
+            url = options.UBER_SERVER + "/v1/requests/{request_id}".format(request_id=request_id)
+            # # # url = "https://sandbox-api.uber.com/v1/products"
+            token = self.request.headers.get_list("token")
+            assert len(token) and len(token[0]), {'message': 'Valid Access-Token is required', 'status': 401}
+
+            headers = {
+                    "Authorization": "Bearer {access_token}".format(access_token=token[0]),
+                }
+            print headers
+
+            uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, method="DELETE")
+
+            response = uber_res
+        except AssertionError, e:
+            e = e.message
+            status = e['status'] if 'status' in e else 400
+            message = e['message'] if 'message' in e else 'An error occurred'
+            response = e['response'] if 'response' in e else {'error': message}
+        finally:
+            writeObjToResponse(self, object=response, status=status)
+        self.finish()
+
 
 class UberAuthorizeHandler(RequestHandler):
     @coroutine
