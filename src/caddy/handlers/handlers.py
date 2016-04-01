@@ -13,7 +13,9 @@ class XYZHandler(RequestHandler):
     def get(self):
         response = {}
         status = 200
-
+        """
+        https://login.uber.com/oauth/v2/authorize?client_id=UTQo43jef0A1GQaHTbNOBAD_hkrxcSkJ&redirect_uri=http://localhost:8888/api/request/&response_type=code&scope=all_trips
+        """
         try:
             pass
 
