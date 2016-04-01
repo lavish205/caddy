@@ -77,6 +77,7 @@ class UberAuthorizeRedirectionHandler(RequestHandler):
             writeObjToResponse(self, object=response, status=status)
         self.finish()
 
+
 class UberRideRequestHandler(RequestHandler):
     @coroutine
     def post(self):
@@ -121,6 +122,7 @@ class UberRideRequestHandler(RequestHandler):
         finally:
             writeObjToResponse(self, object=response, status=status)
         self.finish()
+
 
 class UberRideStatusHandler(RequestHandler):
     @coroutine
