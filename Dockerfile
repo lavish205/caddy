@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER Lavish Aggarwal "lavish@zopper.com"
+MAINTAINER Lavish Aggarwal "lucky.lavish@gmail.com"
 
 RUN apt-get update && apt-get -y upgrade && apt-get install -y git python2.7 python-pip python-dev libyaml-dev
 
