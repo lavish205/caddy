@@ -1,3 +1,5 @@
+from pymongo import MongoClient
+
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import Application
@@ -10,6 +12,8 @@ from caddy import urls
 class Caddy(Application):
     def __init__(self):
         Application.__init__(self, urls.url_patterns, **settings)
+        self.conn = MongoClient()
+        self.db = self.conn["caddy"]
 
 
 def main():
