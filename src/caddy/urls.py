@@ -1,6 +1,7 @@
 __author__ = 'lavish'
 from handlers.handlers import *
 from handlers.uber import *
+from handlers.apis import *
 
 url_patterns = [
     (r'/api/uber/redirect/', UberAuthorizeRedirectionHandler),
