@@ -1,0 +1,8 @@
+web:
+  build: .
+  command: /bin/bash -e /usr/local/run.sh
+  volumes:
+   - .:/srv/
+  ports:
+   - "8888:8888"
+  privileged: true
