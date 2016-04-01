@@ -4,16 +4,16 @@ from tornado.web import Application
 from tornado.options import options
 
 from settings import settings
-from dipper import urls
+from caddy import urls
 
 
-class Dipper(Application):
+class Caddy(Application):
     def __init__(self):
         Application.__init__(self, urls.url_patterns, **settings)
 
 
 def main():
-    app = Dipper()
+    app = Caddy()
     http_server = HTTPServer(app)
     http_server.bind(options.port)
     if settings['debug']:
