@@ -18,6 +18,8 @@ define('TEMPLATE_ROOT', default=TEMPLATE_ROOT, type=str,
 
 
 # APIs key
+UBER_SERVER = "https://sandbox-api.uber.com"
+UBER_REDIRECT_URI = "http://localhost:8888/api/redirect/"
 AMADEUS_API_KEY = os.environ.get('AMADEUS_API_KEY')
 UBER_CLIENT_ID = os.environ.get('UBER_CLIENT_ID')
 UBER_SERVICE_TOKEN = os.environ.get('UBER_SERVICE_TOKEN')
@@ -27,6 +29,8 @@ define('AMADEUS_API_KEY', default=AMADEUS_API_KEY, type=str, help='amadeus api k
 define('UBER_CLIENT_ID', default=UBER_CLIENT_ID, type=str, help='uber client id')
 define('UBER_SERVICE_TOKEN', default=UBER_SERVICE_TOKEN, type=str, help='uber service token')
 define('UBER_CLIENT_SECRET', default=UBER_CLIENT_SECRET, type=str, help='uber client secret')
+define('UBER_REDIRECT_URI', default=UBER_REDIRECT_URI, type=str, help='uber redirect uri')
+define('UBER_SERVER', default=UBER_SERVER, type=str, help='uber endpoint')
 
 
 settings['static_path'] = MEDIA_ROOT
