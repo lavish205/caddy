@@ -38,7 +38,74 @@ class PNRHandler(RequestHandler):
                 }
 
             item.pop('_id')
-            response = item
+
+        except AssertionError, e:
+            e = e.message
+            status = e['status'] if 'status' in e else 400
+            message = e['message'] if 'message' in e else 'An error occurred'
+            response = e['response'] if 'response' in e else {'error': message}
+        finally:
+            writeObjToResponse(self, object=response, status=status)
+        self.finish()
+
+
+class OTPHandler(RequestHandler):
+    @coroutine
+    def post(self):
+        db = self.application.db
+        response = {}
+        status = 200
+        try:
+            contact_no = self.get_argument("contact_no")
+            exp_time = datetime.datetime.now() + datetime.timedelta(minutes=15)
+            data = {
+                'contact_no': contact_no,
+                'otp': get_otp(contact_no, db),
+                'exp_time': exp_time,
+                'is_active': True
+            }
+            otp_data = db.otp.find_one({"contact_no": contact_no})
+            if otp_data:
+                if otp_data["exp_time"] > datetime.datetime.now():
+                    otp_data.update({"exp_time": datetime.datetime.now()})
+
+            db.otp.insert(data)
+            message = "Your OTP for caddy is {otp}. Please note " \
+                      "this OTP will expire in 15 mins.".format(otp=data['otp'])
+            send_sms_plivo(message, contact_no)
+            data.pop("_id")
+            data["exp_time"] = str(data["exp_time"])
+            response = data
+
+        except AssertionError, e:
+            e = e.message
+            status = e['status'] if 'status' in e else 400
+            message = e['message'] if 'message' in e else 'An error occurred'
+            response = e['response'] if 'response' in e else {'error': message}
+        finally:
+            writeObjToResponse(self, object=response, status=status)
+        self.finish()
+
+    @coroutine
+    def put(self):
+        db = self.application.db
+        response = {}
+        status = 200
+        try:
+            contact_no = self.get_argument("contact_no")
+            otp = self.get_argument("otp")
+            assert contact_no and otp, {
+                "message": "`contact_no` and `otp` key required",
+                "status": 400
+            }
+            print contact_no, otp
+            otp_data = db.otp.find_one({"contact_no": contact_no, "otp": otp})
+            if otp_data:
+                otp_data.update({"exp_time": datetime.datetime.now()})
+                response = {"message": "verified"}
+            else:
+                response = {"message": "wrong combination"}
+                status = 400
 
         except AssertionError, e:
             e = e.message

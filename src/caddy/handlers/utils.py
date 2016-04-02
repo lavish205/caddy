@@ -1,6 +1,9 @@
 import json
 import time
 import logging
+import random
+import string
+import plivo
 
 from StringIO import StringIO
 from gzip import GzipFile
@@ -94,3 +97,33 @@ def writeObjToResponse(self, object, return_type='json', status=200, headers=Non
     else:
         for name, value in headers.items():
             self.add_header(name, value)
+
+
+def get_otp(contact_no, db):
+    """
+    Generate 6 digit OTP code
+    :param contact_no: contact_no for which OTP is to be generated
+    :return: OTP code
+    """
+    code = ""
+    while True:
+        code = "".join([random.choice(string.digits) for _ in xrange(6)])
+        if not db.otp.find_one({"contact_no": contact_no, "otp": code}):
+            break
+    return int(code)
+
+@coroutine
+def send_sms_plivo(msg, phn):
+    auth_id = options.PLIVO_AUTH_ID
+    auth_token = options.PLIVO_AUTH_TOKEN
+    msgdict = {'src': options.PLIVO_SRC}
+    msgdict['dst'] = str(phn)
+    msgdict['text'] = msg
+
+    try:
+        p = plivo.RestAPI(auth_id, auth_token)
+        resp = p.send_message(msgdict)
+        print resp
+        return str(resp)
+    except Exception as e:
+        print e
