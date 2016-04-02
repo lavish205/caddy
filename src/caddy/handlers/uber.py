@@ -1,4 +1,5 @@
 from collections import defaultdict
+import datetime
 from rauth import OAuth2Service
 from tornado.options import options
 from tornado.web import RequestHandler
@@ -7,12 +8,6 @@ from uber_rides.session import Session
 from .utils import *
 
 session = Session(server_token=options.UBER_SERVICE_TOKEN)
-
-
-def get_ride():
-    client = UberRidesClient(session)
-    response = client.get_products(12.937308, 77.627056)
-    return response.json.get("products")
 
 
 class UberAuthorizeRedirectionHandler(RequestHandler):
@@ -84,24 +79,44 @@ class UberRideRequestHandler(RequestHandler):
         response = {}
         status = 200
         try:
-
-            url = options.UBER_SERVER + "/v1/requests"
-            # # # url = "https://sandbox-api.uber.com/v1/products"
             token = self.request.headers.get_list("token")
             assert len(token) and len(token[0]), {'message': 'Valid Access-Token is required', 'status': 401}
 
-            headers = {
-                    "Authorization": "Bearer {access_token}".format(access_token=token[0]),
-                    "Content-Type": "application/json"
-                }
-            print headers
+            db = self.application.db
+            name = self.get_argument("name")
+            email = self.get_argument("email")
+            contact_no = self.get_argument("contact_no")
+            pnr = self.get_argument("pnr")
+            service = self.get_argument("service", "uber")
+            cab_type = self.get_argument("cab_type", 1)  # 1, 2, 3 for mini, sedan, suv respectively
             start_lat = self.get_argument("start_lat")
             start_long = self.get_argument("start_long")
             end_lat = self.get_argument("end_lat")
             end_long = self.get_argument("end_long")
+            schedule_date = self.get_argument("date")
+            schedule_time = self.get_argument("time")
+            date_time = schedule_date + "T" + schedule_time
+
+
             assert start_lat and start_long and end_lat and end_long, {
                 "message": "either of `start_lat`, `start_long`, `end_lat` or `end_long key is missing",
                 "status": 400
+            }
+
+            assert name and email and contact_no and pnr and schedule_date and schedule_time, {
+                "message": "either `name` or `email` or `contact_no` or `pnr` or `date` or `time` key is missing",
+                "status": 400
+            }
+            user_details = {
+                "name": name,
+                "email": email,
+                "contact_no": contact_no,
+                "is_cancelled": 0,
+                "pnr": pnr,
+                "service": service,
+                "cab_type": cab_type,
+                "authorization": token,
+                "schedule_time": date_time
             }
 
             body_params = {
@@ -111,9 +126,27 @@ class UberRideRequestHandler(RequestHandler):
                 "end_longitude": end_long
             }
 
-            uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, body=body_params, is_json=True, method="POST")
+            url = options.UBER_SERVER + "/v1/requests"
+            # # # url = "https://sandbox-api.uber.com/v1/products"
 
-            response = uber_res
+            headers = {
+                    "Authorization": "Bearer {access_token}".format(access_token=token[0]),
+                    "Content-Type": "application/json"
+                }
+
+            if not db.rides.find({'pnr': pnr, 'is_cancelled': 0}).count():
+
+                uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, body=body_params, is_json=True, method="POST")
+
+                user_details["cab"] = uber_res["body"]
+                db.rides.insert_one(user_details)
+                user_details.pop("_id")
+                response = user_details
+            else:
+                assert False, {
+                    "message": "Ride already scheduled",
+                    "status": 400
+                }
         except AssertionError, e:
             e = e.message
             status = e['status'] if 'status' in e else 400
@@ -130,11 +163,20 @@ class UberRideStatusHandler(RequestHandler):
         response = {}
         status = 200
         try:
-            request_id = self.get_argument("request_id")
-            assert request_id, {
-                "message": "`request_id` key is missing",
+            db = self.application.db
+            pnr = self.get_argument("pnr")
+            assert pnr, {
+                "message": "`pnr` key is required",
                 "status": 400
             }
+            data = db.rides.find_one({"pnr": pnr, "is_cancelled": 0})
+            if not data:
+                assert False, {
+                    "message": "invalid pnr",
+                    "status": 400
+                }
+            print data
+            request_id = data["cab"]["request_id"]
             url = options.UBER_SERVER + "/v1/requests/{request_id}".format(request_id=request_id)
             # # # url = "https://sandbox-api.uber.com/v1/products"
             token = self.request.headers.get_list("token")
@@ -146,8 +188,16 @@ class UberRideStatusHandler(RequestHandler):
             print headers
 
             uber_res = yield fetch_from_datastore(apiurl=url, headers=headers)
-
-            response = uber_res
+            assert 'error' not in uber_res, {
+                    'message': uber_res['error'],
+                    'status': uber_res['status_code']
+                }
+            uber_res = uber_res["body"]
+            data["cab"]["status"] = uber_res["status"]
+            data.update(**data)
+            data.pop("_id")
+            data.update({})
+            response = data
         except AssertionError, e:
             e = e.message
             status = e['status'] if 'status' in e else 400
@@ -214,6 +264,7 @@ class UberAuthorizeHandler(RequestHandler):
             # Redirect user here to authorize your application
             login_url = uber_api.get_authorize_url(**parameters)
             response["url"] = login_url
+
         except AssertionError, e:
             e = e.message
             status = e['status'] if 'status' in e else 400
