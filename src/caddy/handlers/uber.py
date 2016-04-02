@@ -63,6 +63,7 @@ class UberAuthorizeRedirectionHandler(RequestHandler):
                 response["products"] = products["body"]["products"]
                 # response["user"] = user_res["body"]
                 response["authorization"] = resp["access_token"]
+                self.redirect("http://localhost:1212/?success=True", status=302)
         except AssertionError, e:
             e = e.message
             status = e['status'] if 'status' in e else 400
@@ -79,8 +80,8 @@ class UberRideRequestHandler(RequestHandler):
         response = {}
         status = 200
         try:
-            token = self.request.headers.get_list("token")
-            assert len(token) and len(token[0]), {'message': 'Valid Access-Token is required', 'status': 401}
+            # token = self.request.headers.get_list("token")
+            # assert len(token) and len(token[0]), {'message': 'Valid Access-Token is required', 'status': 401}
 
             db = self.application.db
             name = self.get_argument("name")
@@ -105,7 +106,7 @@ class UberRideRequestHandler(RequestHandler):
                 "contact_no": contact_no,
                 "is_cancelled": 0,
                 "pnr": pnr,
-                "authorization": token
+                "authorization": ""
             }
 
             scheduling_data = {

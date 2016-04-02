@@ -133,13 +133,14 @@ STATIC_URL = '/static/'
 djcelery.setup_loader()
 
 BROKER_URL = "redis://localhost:6379/0"
-CELERY_IMPORTS = ('caddybase.cabservice.tasks',)
+CELERY_IMPORTS = ('cabservice.tasks',)
 
 CELERYBEAT_SCHEDULE = {
     'send-details-daily': {
-        'task': 'caddybase.cabservice.tasks.schedule_ride',
+        'task': 'cabservice.tasks.schedule_ride',
         # 'schedule': crontab(hour=19, minute=00),
-        'schedule': datetime.timedelta(minutes=5)
+        # 'schedule': datetime.timedelta(minutes=5)
+        'schedule': datetime.timedelta(seconds=15)
     },
 }
 
