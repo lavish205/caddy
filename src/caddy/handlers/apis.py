@@ -75,7 +75,7 @@ class OTPHandler(RequestHandler):
             send_sms_plivo(message, contact_no)
             data.pop("_id")
             data["exp_time"] = str(data["exp_time"])
-            response = data
+            status = 201
 
         except AssertionError, e:
             e = e.message
