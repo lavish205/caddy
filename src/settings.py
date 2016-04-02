@@ -19,7 +19,7 @@ define('TEMPLATE_ROOT', default=TEMPLATE_ROOT, type=str,
 
 # APIs key
 UBER_SERVER = "https://sandbox-api.uber.com"
-UBER_REDIRECT_URI = "http://localhost:8888/api/redirect/"
+UBER_REDIRECT_URI = "http://localhost:8888/api/uber/redirect/"
 AMADEUS_API_KEY = os.environ.get('AMADEUS_API_KEY')
 UBER_CLIENT_ID = os.environ.get('UBER_CLIENT_ID')
 UBER_SERVICE_TOKEN = os.environ.get('UBER_SERVICE_TOKEN')
