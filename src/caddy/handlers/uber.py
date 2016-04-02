@@ -99,6 +99,7 @@ class UberRideRequestHandler(RequestHandler):
                 "message": "either `name` or `contact_no` or `pnr` or `arrival_time`  key is missing",
                 "status": 400
             }
+            arrival_time = datetime.datetime.strptime(arrival_time, "%Y-%m-%dT%H:%M:%S")
             user_details = {
                 "name": name,
                 "contact_no": contact_no,
@@ -133,6 +134,7 @@ class UberRideRequestHandler(RequestHandler):
                 user_details["schedule_data"] = scheduling_data
                 db.rides.insert_one(user_details)
                 user_details.pop("_id")
+                user_details["schedule_data"]["arrival_time"] = str(user_details["schedule_data"]["arrival_time"])
                 response = user_details
             else:
                 assert False, {
