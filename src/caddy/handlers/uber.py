@@ -89,16 +89,7 @@ class UberRideRequestHandler(RequestHandler):
             pnr = self.get_argument("pnr")
             service = self.get_argument("service", "uber")
             cab_type = self.get_argument("cab_type", 1)  # 1, 2, 3 for mini, sedan, suv respectively
-            start_lat = self.get_argument("start_lat")
-            start_long = self.get_argument("start_long")
-            end_lat = self.get_argument("end_lat")
-            end_long = self.get_argument("end_long")
             schedule_date = self.get_argument("date")
-
-            assert start_lat and start_long and end_lat and end_long, {
-                "message": "either of `start_lat`, `start_long`, `end_lat` or `end_long key is missing",
-                "status": 400
-            }
 
             assert name and email and contact_no and pnr and schedule_date, {
                 "message": "either `name` or `email` or `contact_no` or `pnr` or `date` or `time` key is missing",
@@ -115,13 +106,13 @@ class UberRideRequestHandler(RequestHandler):
                 "authorization": token,
                 "schedule_time": schedule_date
             }
-
-            body_params = {
-                "start_latitude": start_lat,
-                "start_longitude": start_long,
-                "end_latitude": end_lat,
-                "end_longitude": end_long
-            }
+            #
+            # body_params = {
+            #     "start_latitude": start_lat,
+            #     "start_longitude": start_long,
+            #     "end_latitude": end_lat,
+            #     "end_longitude": end_long
+            # }
 
             url = options.UBER_SERVER + "/v1/requests"
             # # # url = "https://sandbox-api.uber.com/v1/products"
@@ -133,11 +124,11 @@ class UberRideRequestHandler(RequestHandler):
 
             if not db.rides.find({'pnr': pnr, 'is_cancelled': 0}).count():
 
-                uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, body=body_params, is_json=True, method="POST")
+                # uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, body=body_params, is_json=True, method="POST")
 
-                user_details["cab"] = uber_res["body"]
-                db.rides.insert_one(user_details)
-                user_details.pop("_id")
+                # user_details["cab"] = uber_res["body"]
+                # db.rides.insert_one(user_details)
+                # user_details.pop("_id")
                 response = user_details
             else:
                 assert False, {
