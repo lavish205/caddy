@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
+from celery.schedules import crontab
+import datetime
+import djcelery
+from pymongo import MongoClient
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -37,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cabservice'
+    'cabservice',
+    'djcelery',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -124,3 +128,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Celery
+djcelery.setup_loader()
+
+BROKER_URL = "redis://localhost:6379/0"
+CELERY_IMPORTS = ('caddybase.cabservice.tasks',)
+CELERYBEAT_SCHEDULE = {
+    'send-details-daily': {
+        'task': 'caddybase.cabservice.tasks.schedule_ride',
+        # 'schedule': crontab(hour=19, minute=00),
+        'schedule': datetime.timedelta(seconds=15)
+    },
+}
+
+conn = MongoClient()
+db = conn["caddy"]
