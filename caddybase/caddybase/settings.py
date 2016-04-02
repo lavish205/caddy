@@ -138,7 +138,7 @@ CELERYBEAT_SCHEDULE = {
     'send-details-daily': {
         'task': 'caddybase.cabservice.tasks.schedule_ride',
         # 'schedule': crontab(hour=19, minute=00),
-        'schedule': datetime.timedelta(seconds=15)
+        'schedule': datetime.timedelta(minutes=5)
     },
 }
 

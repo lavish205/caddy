@@ -24,6 +24,10 @@ AMADEUS_API_KEY = os.environ.get('AMADEUS_API_KEY')
 UBER_CLIENT_ID = os.environ.get('UBER_CLIENT_ID')
 UBER_SERVICE_TOKEN = os.environ.get('UBER_SERVICE_TOKEN')
 UBER_CLIENT_SECRET = os.environ.get('UBER_CLIENT_SECRET')
+PLIVO_SRC = '13312090480'
+PLIVO_AUTH_ID = 'MAYWJMNTU1YMFJMGU5ND'
+PLIVO_AUTH_TOKEN = 'NmE2MGUyZmI5OTU4MzMyZjU0ZTMyMGY5NTFjNjhl'
+
 
 define('AMADEUS_API_KEY', default=AMADEUS_API_KEY, type=str, help='amadeus api key')
 define('UBER_CLIENT_ID', default=UBER_CLIENT_ID, type=str, help='uber client id')
@@ -31,6 +35,9 @@ define('UBER_SERVICE_TOKEN', default=UBER_SERVICE_TOKEN, type=str, help='uber se
 define('UBER_CLIENT_SECRET', default=UBER_CLIENT_SECRET, type=str, help='uber client secret')
 define('UBER_REDIRECT_URI', default=UBER_REDIRECT_URI, type=str, help='uber redirect uri')
 define('UBER_SERVER', default=UBER_SERVER, type=str, help='uber endpoint')
+define('PLIVO_SRC', default=PLIVO_SRC, type=str, help='plivo src')
+define('PLIVO_AUTH_ID', default=PLIVO_AUTH_ID, type=str, help='plivo auth id')
+define('PLIVO_AUTH_TOKEN', default=PLIVO_AUTH_TOKEN, type=str, help='plivo auth token')
 
 
 settings = dict()

@@ -9,4 +9,5 @@ url_patterns = [
     (r'/api/uber/authorize/', UberAuthorizeHandler),
     (r'/api/uber/status/', UberRideStatusHandler),
     (r'/api/pnr/', PNRHandler),
+    (r'/api/otp/', OTPHandler),
 ]
