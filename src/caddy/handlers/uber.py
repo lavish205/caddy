@@ -84,51 +84,55 @@ class UberRideRequestHandler(RequestHandler):
 
             db = self.application.db
             name = self.get_argument("name")
-            email = self.get_argument("email")
             contact_no = self.get_argument("contact_no")
             pnr = self.get_argument("pnr")
             service = self.get_argument("service", "uber")
             cab_type = self.get_argument("cab_type", 1)  # 1, 2, 3 for mini, sedan, suv respectively
-            schedule_date = self.get_argument("date")
+            arrival_time = self.get_argument("arrival_time")
+            start_lat = self.get_argument("start_lat")
+            start_long = self.get_argument("start_long")
+            end_lat = self.get_argument("end_lat")
+            end_long = self.get_argument("end_long")
 
-            assert name and email and contact_no and pnr and schedule_date, {
-                "message": "either `name` or `email` or `contact_no` or `pnr` or `date` or `time` key is missing",
+
+            assert name and contact_no and pnr and arrival_time, {
+                "message": "either `name` or `contact_no` or `pnr` or `arrival_time`  key is missing",
                 "status": 400
             }
             user_details = {
                 "name": name,
-                "email": email,
                 "contact_no": contact_no,
                 "is_cancelled": 0,
                 "pnr": pnr,
+                "authorization": token
+            }
+
+            scheduling_data = {
+                "start_latitude": start_lat,
+                "start_longitude": start_long,
+                "end_latitude": end_lat,
+                "end_longitude": end_long,
+                "arrival_time": arrival_time,
                 "service": service,
                 "cab_type": cab_type,
-                "authorization": token,
-                "schedule_time": schedule_date
             }
-            #
-            # body_params = {
-            #     "start_latitude": start_lat,
-            #     "start_longitude": start_long,
-            #     "end_latitude": end_lat,
-            #     "end_longitude": end_long
-            # }
 
-            url = options.UBER_SERVER + "/v1/requests"
+            # url = options.UBER_SERVER + "/v1/requests"
             # # # url = "https://sandbox-api.uber.com/v1/products"
 
-            headers = {
-                    "Authorization": "Bearer {access_token}".format(access_token=token[0]),
-                    "Content-Type": "application/json"
-                }
+            # headers = {
+            #         "Authorization": "Bearer {access_token}".format(access_token=token[0]),
+            #         "Content-Type": "application/json"
+            #     }
 
             if not db.rides.find({'pnr': pnr, 'is_cancelled': 0}).count():
 
                 # uber_res = yield fetch_from_datastore(apiurl=url, headers=headers, body=body_params, is_json=True, method="POST")
-
+                #
                 # user_details["cab"] = uber_res["body"]
-                # db.rides.insert_one(user_details)
-                # user_details.pop("_id")
+                user_details["schedule_data"] = scheduling_data
+                db.rides.insert_one(user_details)
+                user_details.pop("_id")
                 response = user_details
             else:
                 assert False, {
