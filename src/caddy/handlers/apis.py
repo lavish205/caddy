@@ -38,6 +38,9 @@ class PNRHandler(RequestHandler):
                 }
 
             item.pop('_id')
+            airport = db.airport.find_one()
+            item['start_lat'] = airport.get('latitude')
+            item['start_long'] = airport.get('longitude')
             response = item
 
         except AssertionError, e:
