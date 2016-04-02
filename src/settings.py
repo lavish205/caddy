@@ -33,11 +33,13 @@ define('UBER_REDIRECT_URI', default=UBER_REDIRECT_URI, type=str, help='uber redi
 define('UBER_SERVER', default=UBER_SERVER, type=str, help='uber endpoint')
 
 
+settings = dict()
 settings['static_path'] = MEDIA_ROOT
 settings['static_url_prefix'] = '/app_static/'
 settings['cookie_secret'] = "your-cookie-secret"
 settings['xsrf_cookies'] = False
 settings['template_loader'] = Loader(TEMPLATE_ROOT)
+settings['debug'] = True
 
 if options.config:
     options.parse_config_file(options.config)
