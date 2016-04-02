@@ -17,7 +17,7 @@ class PNRHandler(RequestHandler):
         status = 200
 
         try:
-            pnr = self.request.get_argument('pnr')
+            pnr = self.get_argument('pnr')
             assert pnr, {
             "message" : "PNR not provided",
             "status" : 400
@@ -30,8 +30,8 @@ class PNRHandler(RequestHandler):
             "status" : 400
             }
 
-            cities = json.load(open('cities.json'))
-            if item.get('to') not in cities:
+            cities = [city.lower() for city in json.load(open('uber_cities.json'))]
+            if item.get('to').lower() not in cities:
                 assert False, {
                 "message": "Uber not available at this city",
                 "status": 400
