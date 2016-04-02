@@ -134,6 +134,7 @@ djcelery.setup_loader()
 
 BROKER_URL = "redis://localhost:6379/0"
 CELERY_IMPORTS = ('caddybase.cabservice.tasks',)
+
 CELERYBEAT_SCHEDULE = {
     'send-details-daily': {
         'task': 'caddybase.cabservice.tasks.schedule_ride',

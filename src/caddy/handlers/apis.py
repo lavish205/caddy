@@ -104,7 +104,7 @@ class OTPHandler(RequestHandler):
             }
             print contact_no, otp
             otp_data = db.otp.find_one({"contact_no": contact_no, "otp": int(otp)})
-            if otp_data and otp_data["exp_time"] < datetime.datetime.now():
+            if otp_data:
                 otp_data.update({"exp_time": datetime.datetime.now()})
                 response = {"message": "verified"}
             else:
