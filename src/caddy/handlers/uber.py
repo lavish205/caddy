@@ -94,16 +94,13 @@ class UberRideRequestHandler(RequestHandler):
             end_lat = self.get_argument("end_lat")
             end_long = self.get_argument("end_long")
             schedule_date = self.get_argument("date")
-            schedule_time = self.get_argument("time")
-            date_time = schedule_date + "T" + schedule_time
-
 
             assert start_lat and start_long and end_lat and end_long, {
                 "message": "either of `start_lat`, `start_long`, `end_lat` or `end_long key is missing",
                 "status": 400
             }
 
-            assert name and email and contact_no and pnr and schedule_date and schedule_time, {
+            assert name and email and contact_no and pnr and schedule_date, {
                 "message": "either `name` or `email` or `contact_no` or `pnr` or `date` or `time` key is missing",
                 "status": 400
             }
@@ -116,7 +113,7 @@ class UberRideRequestHandler(RequestHandler):
                 "service": service,
                 "cab_type": cab_type,
                 "authorization": token,
-                "schedule_time": date_time
+                "schedule_time": schedule_date
             }
 
             body_params = {
